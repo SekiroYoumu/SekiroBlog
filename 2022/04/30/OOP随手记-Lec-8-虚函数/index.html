@@ -1,0 +1,623 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/SekiroBlog/img/favicon.jpg">
+  <link rel="icon" href="/SekiroBlog/img/favicon.jpg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Fangyi Chen">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本周主要讲述了动多态与虚函数，其实我自己还没完全明白。但还是放上来一下。因为现在博客上的东西真的太少了。TAT">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OOP随手记-Lec.8:虚函数">
+<meta property="og:url" content="https://sekiroyoumu.github.io/SekiroBlog/2022/04/30/OOP%E9%9A%8F%E6%89%8B%E8%AE%B0-Lec-8-%E8%99%9A%E5%87%BD%E6%95%B0/index.html">
+<meta property="og:site_name" content="SekiroYoumu&#39;s Blog">
+<meta property="og:description" content="本周主要讲述了动多态与虚函数，其实我自己还没完全明白。但还是放上来一下。因为现在博客上的东西真的太少了。TAT">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://sekiroyoumu.github.io/SekiroBlog/img/02.assets/image-20220411135538907.png">
+<meta property="og:image" content="https://sekiroyoumu.github.io/SekiroBlog/img/02.assets/image-20220411135549207.png">
+<meta property="og:image" content="https://sekiroyoumu.github.io/SekiroBlog/img/02.assets/image-20220411141103244.png">
+<meta property="og:image" content="c:/Users/SekiroYoumu/AppData/Roaming/Typora/typora-user-images/image-20220411141350827.png">
+<meta property="og:image" content="https://sekiroyoumu.github.io/SekiroBlog/img/02.assets/image-20220411142329187.png">
+<meta property="og:image" content="https://sekiroyoumu.github.io/SekiroBlog/img/02.assets/image-20220411142743142.png">
+<meta property="og:image" content="https://sekiroyoumu.github.io/SekiroBlog/img/02.assets/image-20220411143558393.png">
+<meta property="og:image" content="https://sekiroyoumu.github.io/SekiroBlog/img/02.assets/image-20220411143935739.png">
+<meta property="og:image" content="c:/Users/SekiroYoumu/AppData/Roaming/Typora/typora-user-images/image-20220411144209931.png">
+<meta property="og:image" content="https://sekiroyoumu.github.io/SekiroBlog/img/02.assets/image-20220411144216374.png">
+<meta property="article:published_time" content="2022-04-30T02:58:18.000Z">
+<meta property="article:modified_time" content="2022-04-30T03:09:46.508Z">
+<meta property="article:author" content="Fangyi Chen">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://sekiroyoumu.github.io/SekiroBlog/img/02.assets/image-20220411135538907.png">
+  
+  
+  <title>OOP随手记-Lec.8:虚函数 - SekiroYoumu&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/SekiroBlog/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"sekiroyoumu.github.io","root":"/SekiroBlog/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/SekiroBlog/local-search.xml"};
+  </script>
+  <script  src="/SekiroBlog/js/utils.js" ></script>
+  <script  src="/SekiroBlog/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 6.1.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/SekiroBlog/">
+      <strong>SekiroYoumu&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/SekiroBlog/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/SekiroBlog/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/SekiroBlog/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/SekiroBlog/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/SekiroBlog/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/SekiroBlog/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/SekiroBlog/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="OOP随手记-Lec.8:虚函数">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-04-30 10:58" pubdate>
+        2022年4月30日 上午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      7k 字
+    </span>
+  
+
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      59 分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">OOP随手记-Lec.8:虚函数</h1>
+            
+            <div class="markdown-body">
+              <p>本周主要讲述了动多态与虚函数，其实我自己还没完全明白。<br>但还是放上来一下。<br>因为现在博客上的东西真的太少了。TAT</p>
+<span id="more"></span>
+<h2 id="Lec-8-虚函数"><a href="#Lec-8-虚函数" class="headerlink" title="Lec.8 虚函数"></a>Lec.8 虚函数</h2><p><strong>动多态</strong>及其实现方式</p>
+<h3 id="向上类型转换"><a href="#向上类型转换" class="headerlink" title="向上类型转换"></a>向上类型转换</h3><ul>
+<li>派生类对象&#x2F;引用&#x2F;指针转换成基类对象&#x2F;引用&#x2F;指针，称为向上类型转换。只对<strong>public继承</strong>有效，在继承图上是上升的；对private、protected继承无效。（因为违反安全原则）</li>
+<li>向上类型转换（派生类到基类）可以由编译器自动完成，是一种<strong>隐式类型转换</strong>。</li>
+<li>凡是接受基类对象&#x2F;引用&#x2F;指针的地方（如函数参数），都可以使用派生类对象&#x2F;引用&#x2F;指针，编译器会<strong>自动将派生类对象转换为基类对象</strong>以便使用。</li>
+</ul>
+<p>e.g.</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><div class="code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></div></td><td class="code"><pre><code class="hljs C++"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> std;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Base</span> &#123;<br><span class="hljs-keyword">public</span>:<br>  <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">print</span><span class="hljs-params">()</span> </span>&#123; cout &lt;&lt; <span class="hljs-string">&quot;Base::print()&quot;</span> &lt;&lt; endl; &#125;<br>&#125;;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Derive</span> : <span class="hljs-keyword">public</span> Base &#123;<br><span class="hljs-keyword">public</span>:<br>  <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">print</span><span class="hljs-params">()</span> </span>&#123; cout &lt;&lt; <span class="hljs-string">&quot;Derive::print()&quot;</span> &lt;&lt; endl; &#125;<br>&#125;;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">fun</span><span class="hljs-params">(Base obj)</span> </span>&#123; obj.<span class="hljs-built_in">print</span>(); &#125;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span><br><span class="hljs-function"></span>&#123;<br>  Derive d;<br>  d.<span class="hljs-built_in">print</span>();	<br>  <span class="hljs-built_in">fun</span>(d);		<span class="hljs-comment">/// 本意：希望对Drive::print的调用——被切片，故只有基类成员函数了</span><br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>1、对象的向上转换</p>
+<p><img src="/SekiroBlog/img/02.assets/image-20220411135538907.png" srcset="/SekiroBlog/img/loading.gif" lazyload alt="image-20220411135538907"></p>
+<p>对象切片：派生类对象（指针or引用不会）被向上转换后，其被切片为对应基类</p>
+<p>——导致<strong>数据丢失！</strong></p>
+<p>e.g.</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>&#123;<br>  Pet p;<br>  cout &lt;&lt; <span class="hljs-string">&quot;Pet size:&quot;</span> &lt;&lt; <span class="hljs-built_in">sizeof</span>(p) &lt;&lt; endl;<br>  Dog g;<br>  cout &lt;&lt; <span class="hljs-string">&quot;Dog size:&quot;</span> &lt;&lt; <span class="hljs-built_in">sizeof</span>(g) &lt;&lt; endl;<br>  <span class="hljs-built_in">getSize</span>(g); 	<span class="hljs-comment">/// 对象切片(传参)，数据丢失</span><br>  p = g; 		<span class="hljs-comment">/// 对象切片(赋值)，数据丢失</span><br>  cout &lt;&lt; <span class="hljs-string">&quot;Pet size:&quot;</span> &lt;&lt; <span class="hljs-built_in">sizeof</span>(p) &lt;&lt; endl;<br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>&#123;<br>  <span class="hljs-function">Pet <span class="hljs-title">p</span><span class="hljs-params">(<span class="hljs-number">1</span>)</span></span>;<br>  cout &lt;&lt; p.att_i &lt;&lt; endl;<br>  <span class="hljs-function">Dog <span class="hljs-title">g</span><span class="hljs-params">(<span class="hljs-number">2</span>,<span class="hljs-number">3</span>)</span></span>;<br>  cout &lt;&lt; g.att_i &lt;&lt; <span class="hljs-string">&quot; &quot;</span> &lt;&lt; g.att_j &lt;&lt; endl;<br>  p = g; 		<span class="hljs-comment">/// 对象切片，只赋值基类数据</span><br>  cout &lt;&lt; p.att_i &lt;&lt; endl;<br>  <span class="hljs-comment">//cout &lt;&lt; p.att_j &lt;&lt; endl;  // 没有该参数，编译错误</span><br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>2、指针&#x2F;引用的向上转换</p>
+<p><img src="/SekiroBlog/img/02.assets/image-20220411135549207.png" srcset="/SekiroBlog/img/loading.gif" lazyload alt="image-20220411135549207"></p>
+<p>不创造新的对象，但<strong>只保留基类的接口</strong>。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>&#123;<br>  <span class="hljs-function">Dog <span class="hljs-title">g</span><span class="hljs-params">(<span class="hljs-number">2</span>,<span class="hljs-number">3</span>)</span></span>;<br>  cout &lt;&lt; g.att_i &lt;&lt; <span class="hljs-string">&quot; &quot;</span> &lt;&lt; g.att_j &lt;&lt; endl;<br>  Pet&amp; p = g; 		<span class="hljs-comment">/// 引用向上转换</span><br>  cout &lt;&lt; p.att_i &lt;&lt; endl;<br>  p.att_i = <span class="hljs-number">1</span>;        <span class="hljs-comment">/// 修改基类存在的数据</span><br>  cout &lt;&lt; p.att_i &lt;&lt; endl;<br>  cout &lt;&lt; g.att_i &lt;&lt; <span class="hljs-string">&quot; &quot;</span> &lt;&lt; g.att_j &lt;&lt; endl; <span class="hljs-comment">/// 影响派生类</span><br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>e.g.2</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> std;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Instrument</span> &#123;<br><span class="hljs-keyword">public</span>:<br>  <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">play</span><span class="hljs-params">()</span> </span>&#123; cout &lt;&lt; <span class="hljs-string">&quot;Instrument::play&quot;</span> &lt;&lt; endl; &#125;<br>&#125;;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Wind</span> : <span class="hljs-keyword">public</span> Instrument &#123;<br><span class="hljs-keyword">public</span>:<br>  <span class="hljs-comment">// Redefine interface function:</span><br>  <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">play</span><span class="hljs-params">()</span> </span>&#123; cout &lt;&lt; <span class="hljs-string">&quot;Wind::play&quot;</span> &lt;&lt; endl; &#125;<br>&#125;;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">tune</span><span class="hljs-params">(Instrument&amp; i)</span> </span>&#123;<br>  i.<span class="hljs-built_in">play</span>();<span class="hljs-comment">//编译器已经把该函数入口绑定在了基类上了！</span><br>&#125;<br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>&#123;<br>  Wind flute;<br>  <span class="hljs-built_in">tune</span>(flute); <span class="hljs-comment">/// 引用的向上类型转换(传参)，编译器早绑定，无对象切片产生</span><br>  Instrument &amp;inst = flute;  <span class="hljs-comment">/// 引用的向上类型转换(赋值)</span><br>  inst.<span class="hljs-built_in">play</span>();<br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>“早绑定”</p>
+<h3 id="函数调用捆绑"><a href="#函数调用捆绑" class="headerlink" title="函数调用捆绑"></a>函数调用捆绑</h3><ul>
+<li>把<strong>函数体与函数调用</strong>相联系称为捆绑(binding)。<br>即将函数体的具体实现代码，与调用的函数名绑定。执行到调用代码时进入直接进入捆绑好的函数体内部。</li>
+<li>当<strong>捆绑在程序运行之前（由编译器和连接器）完成时</strong>，称为早捆绑(early binding)。<br>运行之前已经决定了函数调用代码到底进入哪个函数。<br>上面程序中的问题是早捆绑引起的，编译器将tune中的函数<strong>调用i.play()与Instrument::play()绑定</strong>。</li>
+<li>当捆绑根据对象的实际类型(上例中即子类Wind而非Instrument)，发生在程序运行时，称为晚捆绑(late binding)，又称<strong>动态捆绑或运行时捆绑</strong>。<br>要求在运行时能确定对象的实际类型(思考：如何确定？)，并绑定正确的函数。<br>晚捆绑<strong>只对类中的虚函数起作用，使用 virtual 关键字声明虚函数</strong>。</li>
+</ul>
+<h3 id="虚函数"><a href="#虚函数" class="headerlink" title="虚函数"></a>虚函数</h3><p>1、对于被派生类重新定义的成员函数，若它在基类中被声明为虚函数（如下所示），则通过基类指针或引用调用该成员函数时，<strong>编译器将根据所指（或引用）对象的实际类型决定</strong>是调用基类中的函数，还是调用派生类重写的函数。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Base</span> &#123;<br>   <span class="hljs-keyword">public</span>:<br>	<span class="hljs-function"><span class="hljs-keyword">virtual</span> ReturnType <span class="hljs-title">FuncName</span><span class="hljs-params">(argument)</span></span>; <span class="hljs-comment">//虚函数</span><br>	...<br>&#125;;<br></code></pre></td></tr></table></figure>
+
+<p>2、若某成员函数在基类中声明为虚函数，当<strong>派生类重写覆盖它时(同名，同参数函数)</strong> ，无论是否声明为虚函数，该成员函数都仍然是虚函数。</p>
+<p>e.g. 对上一题的修改</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> std;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Instrument</span> &#123;<br><span class="hljs-keyword">public</span>:<br>  <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">play</span><span class="hljs-params">()</span> </span>&#123; cout &lt;&lt; <span class="hljs-string">&quot;Instrument::play&quot;</span> &lt;&lt; endl; &#125;<br>&#125;;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Wind</span> : <span class="hljs-keyword">public</span> Instrument &#123;<br><span class="hljs-keyword">public</span>:<br>  <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">play</span><span class="hljs-params">()</span> </span>&#123; cout &lt;&lt; <span class="hljs-string">&quot;Wind::play&quot;</span> &lt;&lt; endl; &#125;<br>     <span class="hljs-comment">/// 重写覆盖(稍后：重写隐藏和重写覆盖的区别）</span><br>&#125;;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">tune</span><span class="hljs-params">(Instrument&amp; ins)</span> </span>&#123;<br>  ins.<span class="hljs-built_in">play</span>(); <span class="hljs-comment">/// 由于 Instrument::play 是虚函数，编译时不再直接绑定，运行时根据 ins 的实际类型调用。</span><br>&#125;<br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>&#123;<br>  Wind flute;<br>  <span class="hljs-built_in">tune</span>(flute); <span class="hljs-comment">/// 向上类型转换，输出wind::play</span><br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>3、</p>
+<p>但应当注意：晚捆绑只对引用和指针有效。若形参是对象，则一定会发生切片，并早捆绑</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">tune</span><span class="hljs-params">(Instrument ins)</span> </span>&#123;<br>  ins.<span class="hljs-built_in">play</span>(); <span class="hljs-comment">/// 晚绑定只对指针和引用有效，这里早绑定 Instrument::play</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>&#123;<br>  Wind flute;<br>  <span class="hljs-built_in">tune</span>(flute); <span class="hljs-comment">/// 向上类型转换，对象切片，输出instrument::play</span><br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="4、实现方法：虚函数表"><a href="#4、实现方法：虚函数表" class="headerlink" title="4、实现方法：虚函数表"></a>4、实现方法：虚函数表</h4><p>关键是 如何确定函数入口的地址？</p>
+<p><img src="/SekiroBlog/img/02.assets/image-20220411141103244.png" srcset="/SekiroBlog/img/loading.gif" lazyload alt="image-20220411141103244"></p>
+<p>e.g.</p>
+<p><img src="C:\Users\SekiroYoumu\AppData\Roaming\Typora\typora-user-images\image-20220411141350827.png" srcset="/SekiroBlog/img/loading.gif" lazyload alt="image-20220411141350827"></p>
+<p>对类型信息的存放会导致编译器隐式地存放了上述信息，如：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>&#123;    cout&lt;&lt;<span class="hljs-string">&quot;int: &quot;</span>&lt;&lt;<span class="hljs-built_in">sizeof</span>(<span class="hljs-type">int</span>)&lt;&lt;endl;    cout&lt;&lt;<span class="hljs-string">&quot;NoVirtual: &quot;</span>&lt;&lt;<span class="hljs-built_in">sizeof</span>(NoVirtual)&lt;&lt;endl;    cout&lt;&lt;<span class="hljs-string">&quot;void* : &quot;</span>&lt;&lt;<span class="hljs-built_in">sizeof</span>(<span class="hljs-type">void</span>*)&lt;&lt;endl;    cout&lt;&lt;<span class="hljs-string">&quot;OneVirtual: &quot;</span>&lt;&lt;<span class="hljs-built_in">sizeof</span>(OneVirtual)&lt;&lt;endl;    cout&lt;&lt;<span class="hljs-string">&quot;TwoVirtual: &quot;</span>&lt;&lt;<span class="hljs-built_in">sizeof</span>(TwoVirtual)&lt;&lt;endl;<br>	<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;&#125;<br></code></pre></td></tr></table></figure>
+
+<p><img src="/SekiroBlog/img/02.assets/image-20220411142329187.png" srcset="/SekiroBlog/img/loading.gif" lazyload alt="image-20220411142329187"></p>
+<h3 id="虚函数与构造函数-x2F-析构函数"><a href="#虚函数与构造函数-x2F-析构函数" class="headerlink" title="虚函数与构造函数&#x2F;析构函数"></a>虚函数与构造函数&#x2F;析构函数</h3><p>1、虚函数与构造函数</p>
+<p>(1)</p>
+<ul>
+<li>当创建一个包含有虚函数的对象时，必须<strong>初始化它的VPTR以指向相应的VTABLE</strong>。设置VPTR的工作由<strong>构造函数</strong>完成。编译器在构造函数的开头秘密的插入能初始化VPTR的代码。</li>
+</ul>
+<p>(2)构造函数<strong>不能也不必</strong>是虚函数。</p>
+<ul>
+<li>不能：如果构造函数是虚函数，则创建对象时需要先知道VPTR，而在构造函数调用前，VPTR未初始化。</li>
+<li>不必：构造函数的作用是提供类中成员初始化，调用时明确指定要创建对象的类型，没有必要是虚函数。</li>
+</ul>
+<p>(3)构造函数调用虚函数</p>
+<p>e.g.</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> std;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Base</span> &#123;<br><span class="hljs-keyword">public</span>:<br>  <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">foo</span><span class="hljs-params">()</span></span>&#123;cout&lt;&lt;<span class="hljs-string">&quot;Base::foo&quot;</span>&lt;&lt;endl;&#125;<br>  <span class="hljs-built_in">Base</span>()&#123;<span class="hljs-built_in">foo</span>();&#125;	 <span class="hljs-comment">///在构造函数中调用虚函数foo  </span><br>  <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">bar</span><span class="hljs-params">()</span></span>&#123;<span class="hljs-built_in">foo</span>();&#125;;	<span class="hljs-comment">///在普通函数中调用虚函数foo</span><br>&#125;;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Derived</span> : <span class="hljs-keyword">public</span> Base &#123;<br><span class="hljs-keyword">public</span>:<br>  <span class="hljs-type">int</span> _num;<br>  <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">foo</span><span class="hljs-params">()</span></span>&#123;cout&lt;&lt;<span class="hljs-string">&quot;Derived::foo&quot;</span>&lt;&lt;_num&lt;&lt;endl;&#125;  <span class="hljs-built_in">Derived</span>(<span class="hljs-type">int</span> j):<span class="hljs-built_in">Base</span>(),_num(j)&#123;&#125;<br>&#125;;<br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>&#123;    <span class="hljs-function">Derived <span class="hljs-title">d</span><span class="hljs-params">(<span class="hljs-number">0</span>)</span></span>;    Base &amp;b = d;    b.<span class="hljs-built_in">bar</span>();    b.<span class="hljs-built_in">foo</span>();    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;&#125;<br></code></pre></td></tr></table></figure>
+
+<p><img src="/SekiroBlog/img/02.assets/image-20220411142743142.png" srcset="/SekiroBlog/img/loading.gif" lazyload alt="image-20220411142743142"></p>
+<p>Summary: 构造函数调用虚函数只能调用本地版本！因为派生类此时还没分配好内存，会导致非法的内存访问。</p>
+<p>•在构造函数中调用一个虚函数，被**调用的只是这个函数的本地版本(即当前类的版本)**，即虚机制在构造函数中不工作。</p>
+<p>•派生类对象初始化顺序：(与构造函数初始化列表顺序无关)</p>
+<p>①<strong>基类初始化</strong></p>
+<p>②<strong>对象成员初始化</strong></p>
+<p>③<strong>构造函数体</strong></p>
+<p>•原因：基类的构造函数比派生类先执行，调用基类构造函数时派生类中的数据成员还没有初始化(上例中 Derive中的数据成员i)。如果允许调用实际对象的虚函数(如b.foo())，则可能会用到未初始化的派生类成员。</p>
+<p>2、虚函数与析构函数</p>
+<ul>
+<li>析构函数<strong>能是虚的，且常常是虚的</strong>。虚析构函数仍需定义函数体。</li>
+<li>虚析构函数的用途：当删除基类对象指针时，编译器将<strong>根据指针所指对象的实际类型，调用相应的析构函数</strong>。</li>
+<li>若基类析构不是虚函数，则删除基类指针所指派生类对象时，编译器仅自动调用基类的析构函数，而不会考虑实际对象是不是基类的对象。这可能<strong>会导致内存泄漏</strong>。</li>
+<li>同样，在<strong>析构函数中调用一个虚函数，被调用的只是这个函数的本地版本</strong>，即虚机制在析构函数<strong>中</strong>不工作。   为什么？</li>
+</ul>
+<p>e.g.</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> std;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Base1</span> &#123;<br><span class="hljs-keyword">public</span>:<br>  ~<span class="hljs-built_in">Base1</span>() &#123; cout &lt;&lt; <span class="hljs-string">&quot;~Base1()\n&quot;</span>; &#125;<br>&#125;;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Derived1</span> : <span class="hljs-keyword">public</span> Base1 &#123;<br><span class="hljs-keyword">public</span>:<br>  ~<span class="hljs-built_in">Derived1</span>() &#123; cout &lt;&lt; <span class="hljs-string">&quot;~Derived1()\n&quot;</span>; &#125;<br>&#125;;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Base2</span> &#123;<br><span class="hljs-keyword">public</span>:<br>  <span class="hljs-keyword">virtual</span> ~<span class="hljs-built_in">Base2</span>() &#123; cout &lt;&lt; <span class="hljs-string">&quot;~Base2()\n&quot;</span>; &#125;<br>&#125;;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Derived2</span> : <span class="hljs-keyword">public</span> Base2 &#123;<br><span class="hljs-keyword">public</span>:<br>  ~<span class="hljs-built_in">Derived2</span>() &#123; cout &lt;&lt; <span class="hljs-string">&quot;~Derived2()\n&quot;</span>; &#125;<br>&#125;;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>&#123;<br>  Base1* bp = <span class="hljs-keyword">new</span> Derived1;<br>  <span class="hljs-keyword">delete</span> bp; <span class="hljs-comment">/// 只调用了基类的虚析构函数，根据指针类型选择</span><br>  Base2* b2p = <span class="hljs-keyword">new</span> Derived2;<br>  <span class="hljs-keyword">delete</span> b2p; <span class="hljs-comment">/// 派生类虚析构函数调用完后调用基类的虚析构函数</span><br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p><img src="/SekiroBlog/img/02.assets/image-20220411143558393.png" srcset="/SekiroBlog/img/loading.gif" lazyload alt="image-20220411143558393"><strong>将基类的析构函数设置为虚析构函数！</strong></p>
+<h3 id="重载-x2F-重写覆盖-x2F-重写隐藏的区分"><a href="#重载-x2F-重写覆盖-x2F-重写隐藏的区分" class="headerlink" title="重载&#x2F;重写覆盖&#x2F;重写隐藏的区分"></a>重载&#x2F;重写覆盖&#x2F;重写隐藏的区分</h3><ul>
+<li><p>重载(overload)：<br>函数名必须相同，函数参数必须不同，作用域相同(同一个类，或同为全局函数)，返回值可以相同或不同。</p>
+</li>
+<li><p>重写覆盖(override)：<br>派生类重新定义基类中的虚函数，函数名必须相同，函数参数必须相同，返回值一般情况应相同。<br>派生类的虚函数表中原基类的虚函数指针会<strong>被派生类中重新定义的虚函数指针覆盖掉</strong>。</p>
+</li>
+<li><p>重写隐藏(redefining)：<br>派生类重新定义基类中的函数，函数名相同，但是参数不同或者基类的函数不是虚函数。(参数相同+虚函数-&gt;不是重写隐藏)<br>重写隐藏中<strong>虚函数表不会发生覆盖</strong>。（保留基类继承而来的虚函数）</p>
+<p><img src="/SekiroBlog/img/02.assets/image-20220411143935739.png" srcset="/SekiroBlog/img/loading.gif" lazyload alt="image-20220411143935739"></p>
+</li>
+</ul>
+<p><img src="C:\Users\SekiroYoumu\AppData\Roaming\Typora\typora-user-images\image-20220411144209931.png" srcset="/SekiroBlog/img/loading.gif" lazyload alt="image-20220411144209931"></p>
+<p><img src="/SekiroBlog/img/02.assets/image-20220411144216374.png" srcset="/SekiroBlog/img/loading.gif" lazyload alt="image-20220411144216374"></p>
+<p>重要的是明白基类指针指向哪个函数！也就是虚函数表中各个入口地址是什么情况</p>
+<h4 id="辅助检查：override关键字"><a href="#辅助检查：override关键字" class="headerlink" title="辅助检查：override关键字"></a>辅助检查：override关键字</h4><p>重写覆盖要满足的条件很多，很容易写错，可以<strong>使用override关键字辅助检查。</strong></p>
+<ul>
+<li>override关键字明确地告诉编译器一个函数是对基类中一个虚函数的重写覆盖，编译器将对重写覆盖要满足的条件进行检查，正确的重写覆盖才能通过编译。</li>
+<li>如果没有override关键字，但是满足了重写覆盖的各项条件，也能实现重写覆盖。它只是编译器的一个检查，正确实现override时，对编译结果没有影响。</li>
+</ul>
+<h4 id="禁止重写：final关键字"><a href="#禁止重写：final关键字" class="headerlink" title="禁止重写：final关键字"></a>禁止重写：final关键字</h4><p>不想让使用者继承？-&gt; final关键字!<br>在虚函数声明或定义中使用时，final确保函数为虚且不可被派生类重写。</p>
+<p>可在继承关系链的“中途”进行设定，<strong>禁止后续派生类对指定虚函数重写</strong>。<br>在类定义中使用时，final指定此类不可被继承。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs C++"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Base</span>&#123;<br>  <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">foo</span><span class="hljs-params">()</span></span>&#123;&#125;;<br>&#125;;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">A</span>: <span class="hljs-keyword">public</span> Base &#123;<br>  <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">foo</span><span class="hljs-params">()</span> <span class="hljs-keyword">final</span> </span>&#123;&#125;; <span class="hljs-comment">/// 重写覆盖，且是最终覆盖</span><br>  <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">bar</span><span class="hljs-params">()</span> <span class="hljs-keyword">final</span> </span>&#123;&#125;; <span class="hljs-comment">/// bar 非虚函数，编译错误</span><br>&#125;;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">B</span> <span class="hljs-keyword">final</span> : <span class="hljs-keyword">public</span> A&#123;<br>  <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">foo</span><span class="hljs-params">()</span> <span class="hljs-keyword">override</span> </span>&#123;&#125;; <span class="hljs-comment">/// A::foo 已是最终覆盖，编译错误</span><br>&#125;;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">C</span> : <span class="hljs-keyword">public</span> B&#123; <span class="hljs-comment">/// B 不能被继承，编译错误</span><br>&#125;;<br><br></code></pre></td></tr></table></figure>
+
+<h3 id="OOP的核心思想及其实现方式"><a href="#OOP的核心思想及其实现方式" class="headerlink" title="OOP的核心思想及其实现方式"></a>OOP的核心思想及其实现方式</h3><p>OOP的核心思想是<strong>数据抽象、继承与动态绑定</strong></p>
+<ul>
+<li><p>数据抽象：类的接口与实现分离<br>Animal\模板设计的例子</p>
+</li>
+<li><p>继承：建立相关类型的层次关系（基类与派生类）<br>Is-a、is-implementing-in-terms-of: 客观世界的认知关系</p>
+</li>
+<li><p>动态绑定：统一使用基类指针，实现多态行为<br><strong>虚函数（动多态）</strong><br>类型转换，模板（静多态）</p>
+</li>
+</ul>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/SekiroBlog/categories/OOP%E7%AC%94%E8%AE%B0/">OOP笔记</a>
+                    
+                  </div>
+                
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/SekiroBlog/2022/04/30/OOP%E9%9A%8F%E6%89%8B%E8%AE%B0-Lec-7-%E7%BB%84%E5%90%88%E4%B8%8E%E7%BB%A7%E6%89%BF/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">OOP随手记-Lec.7:组合与继承</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/SekiroBlog/2022/04/28/hello-hexo/">
+                        <span class="hidden-mobile">OOP随手记-Lec.9:多态与模板</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <div id="SOHUCS" sid='https://sekiroyoumu.github.io/SekiroBlog/2022/04/30/OOP%E9%9A%8F%E6%89%8B%E8%AE%B0-Lec-8-%E8%99%9A%E5%87%BD%E6%95%B0/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw2W8RHn","appkey":"prod_256ad4b7d14529b82b6754e80ba122e7"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/SekiroBlog/js/events.js" ></script>
+<script  src="/SekiroBlog/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/SekiroBlog/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/SekiroBlog/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/SekiroBlog/js/boot.js" ></script>
+
+
+</body>
+</html>
